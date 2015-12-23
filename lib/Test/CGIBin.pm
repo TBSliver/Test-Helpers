@@ -46,11 +46,21 @@ has 'mount' => (
   default => '/',
 );
 
+has exec_cb => (
+  is => 'ro',
+  default => sub {
+    sub { 1 },
+  },
+);
+
 has 'plack_cgibin' => (
   is => 'lazy',
   builder => sub {
     my ( $self ) = @_;
-    my $app = Plack::App::CGIBin->new( root => $self->cgi_bin )->to_app;
+    my $app = Plack::App::CGIBin->new(
+      root    => $self->cgi_bin,
+      exec_cb => $self->exec_cb,
+    )->to_app;
     return $app;
   },
 );
